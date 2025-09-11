@@ -1,4 +1,4 @@
----
+
 # 📓 Notes API with File Uploads
 
 A simple and professional **Notes API** built with **FastAPI + SQLite** that allows you to:
