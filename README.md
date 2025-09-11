@@ -1,5 +1,4 @@
 ---
-
 # 📓 Notes API with File Uploads
 
 A simple and professional **Notes API** built with **FastAPI + SQLite** that allows you to:
@@ -8,6 +7,7 @@ A simple and professional **Notes API** built with **FastAPI + SQLite** that all
 * Attach files (Images/PDFs) 📂
 * Retrieve, list, and delete notes
 * Serve uploaded files as static content
+---
 
 This project demonstrates:
 
