@@ -21,6 +21,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # initialize DB
 init_db()
 
+
 @app.post("/notes", response_model=dict)
 async def create_note(
         title: str = Form(...),
@@ -89,6 +90,7 @@ async def create_note(
         "created_at": note.created_at.isoformat(),
     }
 
+
 @app.get("/notes", response_model=list[dict])
 def list_notes():
     with get_session() as session:
@@ -108,6 +110,7 @@ def list_notes():
         })
     return results
 
+
 @app.get("/notes/{note_id}", response_model=dict)
 def get_note(note_id: int):
     with get_session() as session:
@@ -125,6 +128,7 @@ def get_note(note_id: int):
         "size": note.size,
         "created_at": note.created_at.isoformat(),
     }
+
 
 @app.delete("/notes/{note_id}", response_model=dict)
 def delete_note(note_id: int):
@@ -147,6 +151,7 @@ def delete_note(note_id: int):
         session.commit()
 
     return {"detail": "Note deleted"}
+
 
 # Simple HTML form to test in browser
 @app.get("/", response_class=HTMLResponse)
