@@ -5,3 +5,5 @@ aiofiles
 python-multipart
 jinja2
 pip~=25.2
+passlib[bcrypt]       # password hashing
+python-jose[cryptography]  # JWT tokens
