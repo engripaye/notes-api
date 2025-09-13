@@ -1,9 +1,11 @@
-fastapi
+fastapi~=0.116.1
 uvicorn[standard]
-sqlmodel
-aiofiles
+sqlmodel~=0.0.24
+aiofiles~=24.1.0
 python-multipart
-jinja2
+jinja2~=3.1.6
 pip~=25.2
-passlib[bcrypt]       # password hashing
+passlib[bcrypt]~=1.7.4
 python-jose[cryptography]  # JWT tokens
+cryptography~=45.0.7
+jose
