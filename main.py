@@ -5,18 +5,27 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
-
+from fastapi.middleware.cors import CORSMiddleware
 from database import init_db, get_session
 from models import User, Note
 from auth import hash_password, verify_password, create_access_token, get_current_user
 
-UPLOAD_DIR = "../uploads"
+UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 app = FastAPI(title="Notes API with Users & File Uploads")
-app.mount("../uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 init_db()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or ["http://127.0.0.1:5500"] for frontend only
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # ---------------- User Routes ----------------
 @app.post("/register")
@@ -32,6 +41,7 @@ def register(username: str = Form(...), password: str = Form(...)):
         session.refresh(user)
         return {"id": user.id, "username": user.username}
 
+
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     with get_session() as session:
@@ -41,6 +51,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
         token = create_access_token({"sub": user.username})
         return {"access_token": token, "token_type": "bearer"}
+
 
 # ---------------- Notes Routes ----------------
 @app.post("/notes")
@@ -82,13 +93,17 @@ async def create_note(
         session.commit()
         session.refresh(note)
 
-    return {"id": note.id, "title": note.title, "file_url": f"/uploads/{note.stored_filename}" if note.stored_filename else None}
+    return {"id": note.id, "title": note.title,
+            "file_url": f"/uploads/{note.stored_filename}" if note.stored_filename else None}
+
 
 @app.get("/notes")
 def list_notes(current_user: User = Depends(get_current_user)):
     with get_session() as session:
         notes = session.exec(select(Note).where(Note.owner_id == current_user.id)).all()
-    return [{"id": n.id, "title": n.title, "content": n.content, "file_url": f"/uploads/{n.stored_filename}" if n.stored_filename else None} for n in notes]
+    return [{"id": n.id, "title": n.title, "content": n.content,
+             "file_url": f"/uploads/{n.stored_filename}" if n.stored_filename else None} for n in notes]
+
 
 @app.delete("/notes/{note_id}")
 def delete_note(note_id: int, current_user: User = Depends(get_current_user)):
@@ -105,6 +120,7 @@ def delete_note(note_id: int, current_user: User = Depends(get_current_user)):
         session.delete(note)
         session.commit()
     return {"detail": "Note deleted"}
+
 
 # Simple HTML homepage for testing
 @app.get("/", response_class=HTMLResponse)
